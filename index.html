@@ -78,29 +78,22 @@
     </div>
     <script>
         let counterElem = document.getElementById('counter');
-        
-        // Retrieve counter value from localStorage or initialize to 200 if not present
-        let count = parseInt(localStorage.getItem('counterValue')) || 50;
 
-        // Display the initial counter value
-        counterElem.innerText = count;
-
-        function updateCounter() {
-            if (count > 0) {
-                count -= 5;
-                counterElem.innerText = count;
-                localStorage.setItem('counterValue', count); // Save the updated counter value
-                counterElem.style.animation = 'slide 0.5s ease-in-out';
-                setTimeout(() => counterElem.style.animation = '', 500);
-            } else {
-                counterElem.innerText = 0;
-                localStorage.removeItem('counterValue'); // Remove the counter value when it reaches 0
-                clearInterval(counterInterval); // Stop the counter update
+        // Fetch counter value from the server
+        async function getCounterValue() {
+            try {
+                const response = await fetch('https://counter-50-api.vercel.app/get-counter');
+                const data = await response.json();
+                counterElem.innerText = data.count;
+            } catch (error) {
+                console.error('Error fetching counter value:', error);
+                counterElem.innerText = "Error";
             }
         }
 
-        // Update the counter every 2 seconds
-        let counterInterval = setInterval(updateCounter, 60000);
+        // Initialize the counter and set interval for regular updates
+        getCounterValue();
+        setInterval(getCounterValue, 10000); // Fetch counter every 10 seconds to keep it updated
     </script>
 </body>
 </html>
